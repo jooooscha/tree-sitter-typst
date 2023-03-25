@@ -1,0 +1,77 @@
+==================
+Simple text
+==================
+
+= Introduction
+
+test
+
+= Second title
+
+---
+
+(source_file
+    (title
+        (text))
+    (text)
+    (title
+        (text)))
+
+
+===
+Function
+===
+
+#figure() <imagetag>
+
+#text(blue)[hi]
+
+---
+
+(source_file
+    (function
+        (name)
+        (parameter_list)
+        (tag
+            (tag_name)))
+    (function
+        (name)
+        (parameter_list
+            (name))
+        (block
+            (text))))
+
+===
+List
+===
+
++ hi
++ sdfba
+- sjdf
+- sdf
+
+---
+
+(source_file
+    (list
+        (list_item)
+        (list_item)
+        (list_item)
+        (list_item)))
+
+===
+Comment
+===
+
+text
+
+/* comment */
+
+text
+
+---
+
+(source_file
+    (text)
+    (comment)
+    (text))
