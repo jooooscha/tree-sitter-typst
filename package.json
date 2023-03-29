@@ -13,13 +13,14 @@
   },
   "tree-sitter": [
     {
-      "scope": "typst",
+      "scope": "scope.typst",
       "file-types": [
         "typ"
       ],
       "highlights": [
         "queries/highlights.scm"
-      ]
+      ],
+      "injection-regex": "typst"
     }
   ]
 }
