@@ -19,30 +19,32 @@ test
 
 
 ===
-Function
+function
 ===
 
-#figure() <imagetag>
+#figure() <imagetag> text
 
-#text(blue)[hi]
+#text(blue)[blue text] text
 
 ---
 
 (source_file
     (function
-        (name)
+        (identifier)
         (parameter_list)
         (tag
-            (tag_name)))
+            (identifier)))
+    (text)
     (function
-        (name)
+        (identifier)
         (parameter_list
-            (name))
+            (identifier))
         (block
-            (text))))
+            (text)))
+    (text))
 
 ===
-List
+list
 ===
 
 + hi
@@ -60,18 +62,17 @@ List
         (list_item)))
 
 ===
-Comment
+Set Rule
 ===
 
-text
-
-/* comment */
-
-text
+#set heading(numbering:"1")
 
 ---
 
 (source_file
-    (text)
-    (comment)
-    (text))
+    (set_rule
+        (function
+            (identifier)
+            (parameter_list
+                (identifier)
+                (string)))))

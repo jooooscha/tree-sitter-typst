@@ -7,7 +7,7 @@ module.exports = grammar({
         _definition: $ => choice(
             $.text,
             $.title,
-            $.function,
+            $._expressions,
             $.list,
             $.comment,
         ),
@@ -15,44 +15,81 @@ module.exports = grammar({
         title: $ => seq(
             '=',
             $.text,
+            "\n",
         ),
 
-        function: $ => seq(
+        set_rule: $ => seq(
             '#',
-            alias($.inline_function, "function"),
+            'set',
+            $.function
         ),
-        inline_function: $ => seq(
-            $.name,
-            $.parameter_list,
+
+        _expressions: $ => seq(
+            '#',
             choice(
-                $.tag,
-                $.block
+                $.function,
+                $.set_rule,
             ),
+        ),
+        function: $ => seq(
+            field("name", $.identifier),
+            field("parameters", $.parameter_list),
+            field("block", optional($.block)),
+            field("tag", optional($.tag)),
         ),
 
         parameter_list: $ => seq(
             "(",
-            optional(
-                seq(
-                    $._parameter,
-                    repeat(
-                        seq(",", $._parameter),
-                    ),
-                ),
-            ),
+            sepBy(",", $._parameter),
             ")"
         ),
 
         _parameter: $ => choice(
-            $.name,
-            $.inline_function,
-            $.named_parameter
+            /* $.function, */
+            $._named_parameter,
+            $.identifier,
         ),
 
-        named_parameter: $ => seq(
-            $.name,
+        _named_parameter: $ => seq(
+            $.identifier,
             ":",
-            $._type
+            $._type,
+        ),
+
+        block: $ => seq(
+            "[",
+            $.text,
+            "]"
+        ),
+
+        tag: $ => seq(
+            "<",
+            $.identifier,
+            ">"
+        ),
+
+        set_rule: $ => seq(
+            "set",
+            $.function,
+        ),
+
+        list: $ => seq(
+            prec.right(
+                repeat1(seq(
+                    $.list_item
+                )),
+            ),
+        ),
+
+
+        list_item: $ => seq(
+            $._list_marker,
+            /[a-zA-Z0-9 ._-]+/,
+        ),
+
+        _list_marker: $ => choice(
+            "-",
+            "+"
         ),
 
         _type: $ => choice(
@@ -63,7 +100,7 @@ module.exports = grammar({
 
         string: $ => seq(
             "\"",
-            /.*/,
+            repeat(/[^\n]/),
             "\""
         ),
 
@@ -74,40 +111,24 @@ module.exports = grammar({
             "false"
         ),
 
-        tag: $ => seq(
-            "<",
-            $.tag_name,
-            ">"
-        ),
-
-        block: $ => seq(
-            "[",
-            $.text,
-            "]"
-        ),
-
-        list: $ => seq(
-            prec.right(
-                repeat1($.list_item),
-            ),
-        ),
-
-        list_item: $ => seq(
-            choice("-", "+"),
-            /[a-zA-Z0-9 ._-]+/,
-        ),
-
         comment: $ => seq(
             "/*",
             repeat(alias($.text, "comment")),
             "*/"
         ),
 
-        name: $ => /[a-zA-Z]+/,
+        identifier: $ => /[a-z]+/,
 
-        tag_name: $ => /[a-z]+/,
-
-        text: $ => /[a-zA-Z0-9 *]+/
+        text: $ => prec.right(repeat1(choice($._word))),
+        _word: $ => /[a-zA-Z0-9]+/,
 
     }
 });
+
+function sepBy1(sep, rule) {
+  return seq(rule, repeat(seq(sep, rule)))
+}
+
+function sepBy(sep, rule) {
+  return optional(sepBy1(sep, rule))
+}
