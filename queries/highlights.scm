@@ -1,4 +1,3 @@
-; test
+;; extends
 
-(title) @keyword
-(function) @keyword
+(title) @text.underline
